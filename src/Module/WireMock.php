@@ -15,84 +15,65 @@
  * You should have received a copy of the GNU General Public License
  * along with codeception-wiremock-extension.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+declare(strict_types=1);
+
 namespace Codeception\Module;
 
 use Codeception\Module as CodeceptionModule;
 use Codeception\Util\Debug;
-use WireMock\Client\WireMock as WireMockClient;
 use WireMock\Client\MappingBuilder;
 use WireMock\Client\RequestPatternBuilder;
+use WireMock\Client\WireMock as WireMockClient;
 
 class WireMock extends CodeceptionModule
 {
-    /**
-     * @var \WireMock\Client\WireMock
-     */
-    private $wireMock;
+    private WireMockClient $wireMock;
 
-    protected $config = [
+    protected array $config = [
         'host' => 'localhost',
-        'port' => '8080'
+        'port' => '8080',
     ];
 
     /**
      * {@inheritDoc}
-     * @see \Codeception\Module::_beforeSuite()
      */
-    public function _beforeSuite($settings = [])
+    public function _beforeSuite($settings = []): void
     {
         $this->config = array_merge($this->config, $settings);
-        Debug::debug(
-            "Connecting to WireMock in: host {$this->config['host']} and port {$this->config['port']}"
-        );
+        Debug::debug("Connecting to WireMock in: host {$this->config['host']} and port {$this->config['port']}");
         $this->wireMock = WireMockClient::create($this->config['host'], $this->config['port']);
     }
 
-    /**
-     * @deprecated use resetMappingsAndRequestJournalInWireMock() instead
-     */
-    public function cleanAllPreviousRequestsToWireMock()
-    {
-        $this->wireMock->reset();
-    }
-
-    /**
-     * @param \WireMock\Client\MappingBuilder $builder
-     */
-    public function expectRequestToWireMock(MappingBuilder $builder)
+    public function expectRequestToWireMock(MappingBuilder $builder): void
     {
         $this->wireMock->stubFor($builder);
     }
 
-    /**
-     * @param \WireMock\Client\RequestPatternBuilder|integer $builderOrCount
-     * @param \WireMock\Client\RequestPatternBuilder         $builder
-     */
-    public function receivedRequestToWireMock($builderOrCount, RequestPatternBuilder $builder = null)
+    public function receivedRequestToWireMock(RequestPatternBuilder|int $builderOrCount, RequestPatternBuilder $builder = null): void
     {
         $this->wireMock->verify($builderOrCount, $builder);
     }
 
     /**
-     * @param  \WireMock\Client\RequestPatternBuilder $builder
      * @return \WireMock\Client\LoggedRequest[]
      */
-    public function findReceivedRequestsToWireMock(RequestPatternBuilder $builder)
+    public function findReceivedRequestsToWireMock(RequestPatternBuilder $builder): array
     {
         return $this->wireMock->findAll($builder);
     }
 
-    public function resetMappingsAndRequestJournalInWireMock()
+    public function resetMappingsAndRequestJournalInWireMock(): void
     {
         $this->wireMock->reset();
     }
 
-    public function resetRequestJournalInWireMock()
+    public function resetRequestJournalInWireMock(): void
     {
         $this->wireMock->resetAllRequests();
     }
 
-    public function resetMappingsInWireMock()
+    public function resetMappingsInWireMock(): void
     {
         $this->wireMock->resetToDefault();
     }

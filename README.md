@@ -37,66 +37,6 @@ modules:
             port: 80 # defaults to 8080
 ```
 
-### Extension
-
-#### Default configuration 
-
-This configuration will download WireMock version 1.57 and run it on port 8080, writing logs to codeception tests _output dir.
-
-```yaml
-# codeception.yml
-extensions:
-    enabled:
-        - Codeception\Extension\WireMock    
-```
-
-#### Connect to a running WireMock instance
-
-```yaml
-# codeception.yml
-extensions:
-    enabled:
-        - Codeception\Extension\WireMock
-    config:     
-        Codeception\Extension\WireMock:
-            host: my.wiremock.server
-            port: 8080
-```
-
-#### Start a local WireMock instance and run it with given command line arguments
-
-```yaml
-# codeception.yml
-extensions:
-    enabled:
-        - Codeception\Extension\WireMock
-    config:     
-        Codeception\Extension\WireMock:
-            jar-path: /opt/wiremock/bin/wiremock-standalone.jar
-            port: 18080
-            https-port: 18443
-            verbose: true
-            root-dir: /opt/wiremock/root
-            
-```
-
-#### Download a WireMock instance and run it with given command line arguments
-
-```yaml
-# codeception.yml
-extensions:
-    enabled:
-        - Codeception\Extension\WireMock
-    config:     
-        Codeception\Extension\WireMock:
-            download-version: 1.57
-            port: 18080
-            https-port: 18443
-            verbose: true
-            root-dir: /opt/wiremock/root
-            logs-path: /var/log/wiremock 
-```
-
 ## How to use
 
 ### Prepare your application
@@ -112,7 +52,7 @@ class YourCest extends \Codeception\TestCase\Test
 {
     public function _after(\AcceptanceTester $I)
     {
-        $I->cleanAllPreviousRequestsToWireMock();
+        $I->resetMappingsAndRequestJournalInWireMock();
     }
 
     // tests
